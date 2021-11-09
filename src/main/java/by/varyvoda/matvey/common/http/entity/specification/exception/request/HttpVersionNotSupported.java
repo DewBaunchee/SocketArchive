@@ -1,6 +1,7 @@
-package by.varyvoda.matvey.common.http.entity.specification.exception;
+package by.varyvoda.matvey.common.http.entity.specification.exception.request;
 
 import by.varyvoda.matvey.common.http.entity.specification.HttpResponseCode;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpRequestException;
 
 public class HttpVersionNotSupported extends HttpRequestException {
 

@@ -2,13 +2,16 @@ package by.varyvoda.matvey.common.http.entity;
 
 import by.varyvoda.matvey.common.http.entity.specification.HttpMethod;
 import by.varyvoda.matvey.common.http.entity.specification.HttpVersion;
-import by.varyvoda.matvey.common.http.entity.specification.exception.BadRequest;
-import by.varyvoda.matvey.common.http.entity.specification.exception.HttpRequestException;
-import by.varyvoda.matvey.common.http.entity.specification.exception.HttpVersionNotSupported;
-import by.varyvoda.matvey.common.http.entity.specification.exception.MethodNotAllowed;
+import by.varyvoda.matvey.common.http.entity.specification.exception.HttpException;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.BadRequest;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpRequestException;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpVersionNotSupported;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.MethodNotAllowed;
+import com.google.gson.Gson;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Map;
 
 @Getter
 public class HttpRequest extends HttpEntity {
@@ -35,7 +38,7 @@ public class HttpRequest extends HttpEntity {
 
     private HttpRequest() {}
 
-    public HttpRequest(String template) throws HttpRequestException {
+    public HttpRequest(String template) throws HttpException {
         super(template);
     }
 
@@ -91,8 +94,13 @@ public class HttpRequest extends HttpEntity {
         return this;
     }
 
-    public HttpRequest body(String body) {
-        this.body = body;
+    public HttpRequest setHeaders(Map<String, String> headers) {
+        this.headers.putAll(headers);
+        return this;
+    }
+
+    public HttpRequest body(Object body) {
+        this.body = new Gson().toJson(body);
         return this;
     }
 

@@ -1,6 +1,5 @@
 package by.varyvoda.matvey.common.command_line;
 
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -36,7 +35,7 @@ public class CommandLine {
         writeLock.unlock();
     }
 
-    public static String readLine() throws IOException {
+    public static String readLine() {
         readLock.lock();
         String line = in.nextLine();
         printInputField();

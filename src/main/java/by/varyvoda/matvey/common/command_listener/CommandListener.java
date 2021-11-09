@@ -1,10 +1,9 @@
-package by.varyvoda.matvey.server.command_listener;
+package by.varyvoda.matvey.common.command_listener;
 
 import by.varyvoda.matvey.common.command_line.CommandLine;
-import by.varyvoda.matvey.server.command_listener.exception.CannotRegisterCommandException;
+import by.varyvoda.matvey.common.command_listener.exception.CannotRegisterCommandException;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,11 +19,7 @@ public class CommandListener extends Thread implements Closeable {
         CommandLine.println(buildCommandList() + "************************************");
         CommandLine.setInputMessage(">>> Print command >>> ");
         while(!isInterrupted()) {
-            try {
-                commands.getOrDefault(CommandLine.readLine(), NOT_FOUND_COMMAND).run();
-            } catch (IOException e) {
-                CommandLine.printStackTrace(e);
-            }
+            commands.getOrDefault(CommandLine.readLine().trim(), NOT_FOUND_COMMAND).run();
         }
     }
 

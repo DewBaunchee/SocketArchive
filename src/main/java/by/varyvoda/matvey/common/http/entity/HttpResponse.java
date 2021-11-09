@@ -2,9 +2,9 @@ package by.varyvoda.matvey.common.http.entity;
 
 import by.varyvoda.matvey.common.http.entity.specification.HttpResponseCode;
 import by.varyvoda.matvey.common.http.entity.specification.HttpVersion;
-import by.varyvoda.matvey.common.http.entity.specification.exception.BadRequest;
-import by.varyvoda.matvey.common.http.entity.specification.exception.HttpRequestException;
-import by.varyvoda.matvey.common.http.entity.specification.exception.HttpVersionNotSupported;
+import by.varyvoda.matvey.common.http.entity.specification.exception.HttpException;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpVersionNotSupported;
+import by.varyvoda.matvey.common.http.entity.specification.exception.response.BadResponse;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -28,16 +28,16 @@ public class HttpResponse extends HttpEntity {
         super();
     }
 
-    public HttpResponse(String template) throws HttpRequestException {
+    public HttpResponse(String template) throws HttpException {
         super(template);
     }
 
     @Override
-    protected void scanFirstLine(String firstLine) throws BadRequest, HttpVersionNotSupported {
+    protected void scanFirstLine(String firstLine) throws BadResponse, HttpVersionNotSupported {
         String[] tokens = firstLine.split(" +");
 
         if (tokens.length != 3)
-            throw new BadRequest("First line is incorrect.");
+            throw new BadResponse("First line is incorrect.");
 
         version = checkVersion(tokens[0]);
         code = Integer.parseInt(tokens[1]);

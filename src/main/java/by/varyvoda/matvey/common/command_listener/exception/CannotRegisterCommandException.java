@@ -1,4 +1,4 @@
-package by.varyvoda.matvey.server.command_listener.exception;
+package by.varyvoda.matvey.common.command_listener.exception;
 
 public class CannotRegisterCommandException extends RuntimeException {
 

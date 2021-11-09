@@ -1,4 +1,4 @@
-package by.varyvoda.matvey.server.connection;
+package by.varyvoda.matvey.common.connection;
 
 public interface IConnectionHandler {
 

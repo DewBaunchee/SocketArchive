@@ -1,7 +1,7 @@
 package by.varyvoda.matvey.server;
 
-import by.varyvoda.matvey.server.command_listener.Command;
-import by.varyvoda.matvey.server.command_listener.CommandListener;
+import by.varyvoda.matvey.common.command_listener.Command;
+import by.varyvoda.matvey.common.command_listener.CommandListener;
 import by.varyvoda.matvey.server.connection_listener.Server;
 
 public class ServerMain {

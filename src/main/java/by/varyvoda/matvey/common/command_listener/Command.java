@@ -1,4 +1,4 @@
-package by.varyvoda.matvey.server.command_listener;
+package by.varyvoda.matvey.common.command_listener;
 
 import lombok.Builder;
 import lombok.Getter;

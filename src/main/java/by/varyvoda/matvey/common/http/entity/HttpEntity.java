@@ -1,9 +1,7 @@
 package by.varyvoda.matvey.common.http.entity;
 
-import by.varyvoda.matvey.common.http.entity.specification.exception.BadRequest;
-import by.varyvoda.matvey.common.http.entity.specification.exception.HttpRequestException;
-import by.varyvoda.matvey.common.http.entity.specification.exception.HttpVersionNotSupported;
-import by.varyvoda.matvey.common.http.entity.specification.exception.MethodNotAllowed;
+import by.varyvoda.matvey.common.http.entity.specification.exception.HttpException;
+import by.varyvoda.matvey.common.http.entity.specification.exception.request.BadRequest;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
@@ -15,12 +13,14 @@ import static by.varyvoda.matvey.common.http.entity.specification.Specification.
 @Getter
 public abstract class HttpEntity {
 
-    protected Map<String, String> headers  = new LinkedHashMap<>();
+    protected Map<String, String> headers = new LinkedHashMap<>();
     protected String body = "";
 
-    protected HttpEntity() {}
+    protected HttpEntity() {
+    }
 
-    public HttpEntity(String template) throws HttpRequestException {
+    public HttpEntity(String template) throws HttpException {
+        this();
         Scanner scanner = new Scanner(template);
         scanFirstLine(scanner.nextLine());
         headers.putAll(scanHeaders(scanner));
@@ -30,9 +30,9 @@ public abstract class HttpEntity {
     private Map<String, String> scanHeaders(Scanner template) throws BadRequest {
         Map<String, String> headers = new LinkedHashMap<>();
         String line;
-        while(template.hasNextLine() && !(line = template.nextLine()).isBlank()) {
+        while (template.hasNextLine() && !(line = template.nextLine()).isBlank()) {
             int separatorPosition = line.indexOf(HEADER_KEY_VALUE_SEPARATOR);
-            if(separatorPosition == -1)
+            if (separatorPosition == -1)
                 throw new BadRequest("No header key value separator (" + HEADER_KEY_VALUE_SEPARATOR + ")");
 
             headers.put(
@@ -45,7 +45,7 @@ public abstract class HttpEntity {
 
     private String scanBody(Scanner template) {
         StringBuilder bodyBuilder = new StringBuilder(); // bodyBuilder lol
-        while(template.hasNextLine()) bodyBuilder.append(template.nextLine());
+        while (template.hasNextLine()) bodyBuilder.append(template.nextLine());
         return bodyBuilder.toString();
     }
 
@@ -58,5 +58,5 @@ public abstract class HttpEntity {
                 + body).trim();
     }
 
-    protected abstract void scanFirstLine(String firstLine) throws HttpRequestException;
+    protected abstract void scanFirstLine(String firstLine) throws HttpException;
 }

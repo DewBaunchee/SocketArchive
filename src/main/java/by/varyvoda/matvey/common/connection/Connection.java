@@ -1,10 +1,9 @@
-package by.varyvoda.matvey.server.connection;
+package by.varyvoda.matvey.common.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +12,7 @@ import java.util.Scanner;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Connection implements Closeable {
+public class Connection implements IConnection<String, String> {
 
     private final Socket connectedSocket;
 

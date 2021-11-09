@@ -1,7 +1,8 @@
 package by.varyvoda.matvey.server.connection_listener;
 
-import by.varyvoda.matvey.server.connection.Connection;
-import by.varyvoda.matvey.server.connection.IConnectionHandler;
+import by.varyvoda.matvey.common.command_line.CommandLine;
+import by.varyvoda.matvey.common.connection.Connection;
+import by.varyvoda.matvey.common.connection.IConnectionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Closeable;
@@ -18,10 +19,15 @@ public class Dispatcher implements Closeable {
 
     public void dispatch(Socket socket) {
         Thread handlingThread = new Thread(() -> {
+            String connectionDescription = "connection with " + socket.getInetAddress() + ".";
+            CommandLine.println("Opening new " + connectionDescription);
             try (Connection connection = new Connection(socket)) {
                 connections.add(connection);
+                CommandLine.println("Handling connection with " + connectionDescription);
                 connectionHandler.handle(connection);
             } catch (Exception e) {
+                CommandLine.printStackTrace(e);
+                CommandLine.println("Exception occurred while handling " + connectionDescription);
                 connections.removeIf((connection -> connection.getConnectedSocket().equals(socket)));
             }
         });
