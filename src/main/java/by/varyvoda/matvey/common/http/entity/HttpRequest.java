@@ -11,14 +11,18 @@ import com.google.gson.Gson;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static by.varyvoda.matvey.common.http.entity.specification.Specification.*;
 
 @Getter
 public class HttpRequest extends HttpEntity {
 
-    private HttpMethod method = HttpMethod.GET;
-    private String url = "/";
-    private HttpVersion version = HttpVersion.HTTP_1_1;
+    private Map<String, String> urlParams;
+    private HttpMethod method;
+    private String url;
 
     public static HttpRequest get() {
         return create().method(HttpMethod.GET);
@@ -36,7 +40,10 @@ public class HttpRequest extends HttpEntity {
         return new HttpRequest();
     }
 
-    private HttpRequest() {}
+    private HttpRequest() {
+        super();
+        urlParams = new LinkedHashMap<>();
+    }
 
     public HttpRequest(String template) throws HttpException {
         super(template);
@@ -44,21 +51,37 @@ public class HttpRequest extends HttpEntity {
 
     @Override
     protected void scanFirstLine(String firstLine) throws HttpRequestException {
-        String[] tokens = firstLine.split(" +");
+        String[] tokens = firstLine.split(" +", 3);
 
-        if(tokens.length != 3)
+        if (tokens.length != 3)
             throw new BadRequest("First line is incorrect.");
 
         method = checkMethod(tokens[0]);
-        url = tokens[1];
+        url = parseUrl(tokens[1]);
+        urlParams = new LinkedHashMap<>(parseParams(tokens[1]));
         version = checkVersion(tokens[2]);
+    }
+
+    private Map<String, String> parseParams(String url) {
+        return Arrays.stream(
+                        url.substring(
+                                url.indexOf(QUERY_PARAM_SECTION_SEPARATOR) + QUERY_PARAM_SECTION_SEPARATOR.length()
+                        ).split(QUERY_PARAM_SEPARATOR))
+                .collect(Collectors.toMap(
+                        param -> param.substring(0, param.indexOf(QUERY_PARAM_KEY_VALUE_SEPARATOR)),
+                        param -> param.substring(param.indexOf(QUERY_PARAM_KEY_VALUE_SEPARATOR) + QUERY_PARAM_KEY_VALUE_SEPARATOR.length())
+                ));
+    }
+
+    private String parseUrl(String url) {
+        return url.substring(0, url.indexOf(QUERY_PARAM_SECTION_SEPARATOR));
     }
 
     private HttpMethod checkMethod(String token) throws MethodNotAllowed {
         HttpMethod method = Arrays.stream(HttpMethod.values())
                 .filter(httpMethod -> httpMethod.name().equals(token))
                 .findFirst().orElse(null);
-        if(method != null)
+        if (method != null)
             return method;
 
         throw new MethodNotAllowed("Such method not allowed: " + token);
@@ -68,7 +91,7 @@ public class HttpRequest extends HttpEntity {
         HttpVersion version = Arrays.stream(HttpVersion.values())
                 .filter(httpVersion -> httpVersion.getLabel().equals(token))
                 .findFirst().orElse(null);
-        if(version != null)
+        if (version != null)
             return version;
 
         throw new HttpVersionNotSupported("Such version not supported: " + token);
@@ -84,13 +107,13 @@ public class HttpRequest extends HttpEntity {
         return this;
     }
 
-    public HttpRequest version(HttpVersion version) {
-        this.version = version;
+    public HttpRequest addHeader(String key, String value) {
+        headers.put(key, value);
         return this;
     }
 
-    public HttpRequest addHeader(String key, String value) {
-        headers.put(key, value);
+    public HttpRequest addParam(String key, String value) {
+        urlParams.put(key, value);
         return this;
     }
 
@@ -107,8 +130,16 @@ public class HttpRequest extends HttpEntity {
     @Override
     public String toString() {
         return (method.name() + " "
-                + url + " "
+                + url + formUrlParams() + " "
                 + version.getLabel() + "\n"
                 + super.toString()).trim();
+    }
+
+    private String formUrlParams() {
+        return urlParams.size() == 0 ? ""
+                : QUERY_PARAM_SECTION_SEPARATOR + urlParams.entrySet().stream()
+                .map(entry -> entry.getKey() + QUERY_PARAM_KEY_VALUE_SEPARATOR + entry.getValue())
+                .reduce("", (accumulator, value) -> accumulator + value + QUERY_PARAM_SEPARATOR)
+                .replaceAll(QUERY_PARAM_SEPARATOR + "$", "");
     }
 }

@@ -10,4 +10,6 @@ public interface IConnection<T, R> extends Closeable {
     R readAll() throws IOException;
 
     void write(T writable) throws IOException;
+
+    void shutdownOutput() throws IOException;
 }

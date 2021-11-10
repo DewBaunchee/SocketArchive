@@ -24,7 +24,8 @@ public class Connection implements IConnection<String, String> {
     public String readAll() throws IOException {
         Scanner requestScanner = new Scanner(connectedSocket.getInputStream());
         StringBuilder stringBuilder = new StringBuilder();
-        while(requestScanner.hasNextLine()) stringBuilder.append(requestScanner.nextLine());
+        while(requestScanner.hasNextLine())
+            stringBuilder.append(requestScanner.nextLine());
         return stringBuilder.toString();
     }
 
@@ -34,6 +35,11 @@ public class Connection implements IConnection<String, String> {
 
     public Socket getConnectedSocket() {
         return connectedSocket;
+    }
+
+    @Override
+    public void shutdownOutput() throws IOException {
+        connectedSocket.shutdownOutput();
     }
 
     @Override

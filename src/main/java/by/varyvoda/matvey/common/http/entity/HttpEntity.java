@@ -1,5 +1,6 @@
 package by.varyvoda.matvey.common.http.entity;
 
+import by.varyvoda.matvey.common.http.entity.specification.HttpVersion;
 import by.varyvoda.matvey.common.http.entity.specification.exception.HttpException;
 import by.varyvoda.matvey.common.http.entity.specification.exception.request.BadRequest;
 import lombok.Getter;
@@ -13,10 +14,13 @@ import static by.varyvoda.matvey.common.http.entity.specification.Specification.
 @Getter
 public abstract class HttpEntity {
 
-    protected Map<String, String> headers = new LinkedHashMap<>();
-    protected String body = "";
+    protected HttpVersion version = HttpVersion.HTTP_1_1;
+    protected Map<String, String> headers;
+    protected String body;
 
     protected HttpEntity() {
+        headers = new LinkedHashMap<>();
+        body = "";
     }
 
     public HttpEntity(String template) throws HttpException {

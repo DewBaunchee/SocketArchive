@@ -7,10 +7,11 @@ import java.util.Objects;
 
 @Getter
 @Builder
-public class Command implements Runnable {
+public class Command {
 
-    private final Runnable runnable;
+    private final CommandRunnable runnable;
     private final String command;
+    private final Integer requiredArgsCount;
     private final String description;
 
     @Override
@@ -18,7 +19,13 @@ public class Command implements Runnable {
         return Objects.hash(command);
     }
 
-    public void run() {
-        runnable.run();
+    public void run(String ...args) {
+        if(requiredArgsCount != null && requiredArgsCount != args.length)
+            throw new IllegalArgumentException("Required arguments count: " + requiredArgsCount + ".");
+        runnable.run(args);
+    }
+
+    public interface CommandRunnable {
+        void run(String ...args);
     }
 }

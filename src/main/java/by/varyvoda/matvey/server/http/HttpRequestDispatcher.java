@@ -1,5 +1,6 @@
 package by.varyvoda.matvey.server.http;
 
+import by.varyvoda.matvey.common.command_line.CommandLine;
 import by.varyvoda.matvey.common.http.entity.HttpRequest;
 import by.varyvoda.matvey.common.http.entity.HttpResponse;
 import by.varyvoda.matvey.common.http.entity.specification.HttpMethod;
@@ -19,9 +20,14 @@ public class HttpRequestDispatcher {
     }
 
     public HttpResponse dispatch(HttpRequest httpRequest) throws Exception {
+        CommandLine.println("Got request: \n" + httpRequest);
         EndPoint<HttpRequest, HttpResponse> endPoint = endPoints.get(httpRequest.getMethod());
+
         if(endPoint == null)
             throw new NotImplemented(httpRequest.getMethod() + " method not implemented yet.");
-        return endPoint.invoke(httpRequest);
+
+        HttpResponse httpResponse = endPoint.invoke(httpRequest);
+        CommandLine.println("Result response: \n" + httpResponse);
+        return httpResponse;
     }
 }

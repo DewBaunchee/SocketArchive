@@ -1,5 +1,6 @@
 package by.varyvoda.matvey.server.http;
 
+import by.varyvoda.matvey.common.command_line.CommandLine;
 import by.varyvoda.matvey.common.http.entity.HttpResponse;
 import by.varyvoda.matvey.common.http.entity.connection.HttpRequestConnection;
 import by.varyvoda.matvey.common.http.entity.specification.HttpResponseCode;
@@ -15,17 +16,22 @@ public class HttpConnectionHandler implements IConnectionHandler {
 
     @Override
     public void handle(Connection connection) throws IOException {
+        HttpRequestConnection httpRequestConnection = new HttpRequestConnection(connection);
         try {
-            HttpRequestConnection httpRequestConnection = new HttpRequestConnection(connection);
             httpRequestConnection.write(
                     httpRequestDispatcher.dispatch(
                             httpRequestConnection.readAll()
                     )
             );
         } catch (HttpRequestException e) {
-            connection.write(HttpResponse.create().code(e.responseCode()).toString());
+            httpRequestConnection.write(HttpResponse.create().code(e.responseCode()));
+            CommandLine.println("Error during request.");
+            CommandLine.printStackTrace(e);
         } catch (Exception e) {
-            connection.write(HttpResponse.create().code(HttpResponseCode.INTERNAL_SERVER_ERROR).toString());
+            httpRequestConnection.write(HttpResponse.create().code(HttpResponseCode.INTERNAL_SERVER_ERROR));
+            CommandLine.println("Error during request.");
+            CommandLine.printStackTrace(e);
         }
+        httpRequestConnection.shutdownOutput();
     }
 }

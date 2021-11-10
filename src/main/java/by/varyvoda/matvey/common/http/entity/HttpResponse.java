@@ -12,9 +12,8 @@ import java.util.Arrays;
 @Getter
 public class HttpResponse extends HttpEntity {
 
-    private HttpVersion version = HttpVersion.HTTP_1_1;
-    private int code = HttpResponseCode.OK.getCode();
-    private String message = HttpResponseCode.OK.getMessage();
+    private int code;
+    private String message;
 
     public static HttpResponse ok() {
         return create().code(HttpResponseCode.OK);
@@ -34,7 +33,7 @@ public class HttpResponse extends HttpEntity {
 
     @Override
     protected void scanFirstLine(String firstLine) throws BadResponse, HttpVersionNotSupported {
-        String[] tokens = firstLine.split(" +");
+        String[] tokens = firstLine.split(" +", 3);
 
         if (tokens.length != 3)
             throw new BadResponse("First line is incorrect.");
@@ -52,11 +51,6 @@ public class HttpResponse extends HttpEntity {
             return version;
 
         throw new HttpVersionNotSupported("Such version not supported: " + token);
-    }
-
-    public HttpResponse version(HttpVersion version) {
-        this.version = version;
-        return this;
     }
 
     public HttpResponse code(int code) {

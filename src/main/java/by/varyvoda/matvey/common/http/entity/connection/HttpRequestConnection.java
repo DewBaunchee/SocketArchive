@@ -29,6 +29,11 @@ public class HttpRequestConnection implements IConnection<HttpResponse, HttpRequ
     }
 
     @Override
+    public void shutdownOutput() throws IOException {
+        connection.shutdownOutput();
+    }
+
+    @Override
     public void close() throws IOException {
         connection.close();
     }

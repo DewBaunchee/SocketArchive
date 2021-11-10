@@ -9,7 +9,7 @@ public class CommandLine {
     private static final Scanner in = new Scanner(System.in);
     private static final Lock writeLock = new ReentrantLock();
     private static final Lock readLock = new ReentrantLock();
-    private static String inputMessage = "";
+    private static String inputMessage = null;
 
     public static void setInputMessage(String inputMessage) {
         writeLock.lock();
@@ -44,12 +44,16 @@ public class CommandLine {
     }
 
     private static void printInputField() {
-        System.out.print(inputMessage);
-        System.out.flush();
+        if (inputMessage != null) {
+            System.out.print(inputMessage);
+            System.out.flush();
+        }
     }
 
     private static void clearInputMessage() {
-        System.out.print("\r" + " ".repeat(inputMessage.length()) + "\r");
-        System.out.flush();
+        if (inputMessage != null) {
+            System.out.print("\r" + " ".repeat(inputMessage.length()) + "\r");
+            System.out.flush();
+        }
     }
 }

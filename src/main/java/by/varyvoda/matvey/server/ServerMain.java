@@ -16,7 +16,7 @@ public class ServerMain {
                 Command.builder()
                         .command("start")
                         .description("Start server")
-                        .runnable(server::start)
+                        .runnable(arguments -> server.start())
                         .build()
         );
 
@@ -24,7 +24,7 @@ public class ServerMain {
                 Command.builder()
                         .command("stop")
                         .description("Stop server")
-                        .runnable(server::shutdown)
+                        .runnable(arguments -> server.shutdown())
                         .build()
         );
 
@@ -32,7 +32,7 @@ public class ServerMain {
                 Command.builder()
                         .command("exit")
                         .description("Exit")
-                        .runnable(() -> {
+                        .runnable(arguments -> {
                             server.shutdown();
                             commandListener.close();
                         })

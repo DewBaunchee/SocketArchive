@@ -1,14 +1,16 @@
 package by.varyvoda.matvey.client.service;
 
+import by.varyvoda.matvey.client.observable.Observable;
 import by.varyvoda.matvey.common.entity.StudentFile;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
 public interface IFileService {
 
-    List<StudentFile> getByName(String name);
+    Observable<Array> getByName(String name);
 
-    List<StudentFile> getAll();
+    Observable<List<StudentFile>> getAll();
 
     void update(StudentFile studentFile);
 
