@@ -45,14 +45,7 @@ public class CommandListener extends Thread implements Closeable {
 
     private String buildCommandList() {
         return commands.values().stream()
-                .map(command ->
-                        String.format(
-                                "\t- \"%s\"%s\n",
-                                command.getCommand(),
-                                command.getDescription() == null ? ""
-                                        : String.format(" to %s", command.getDescription())
-                        )
-                )
+                .map(command -> String.format("\t- %s\n", command))
                 .reduce("Commands:\n", (accumulator, command) -> accumulator + command);
     }
 

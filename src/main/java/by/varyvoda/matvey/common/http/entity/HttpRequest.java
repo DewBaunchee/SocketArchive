@@ -7,7 +7,6 @@ import by.varyvoda.matvey.common.http.entity.specification.exception.request.Bad
 import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpRequestException;
 import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpVersionNotSupported;
 import by.varyvoda.matvey.common.http.entity.specification.exception.request.MethodNotAllowed;
-import com.google.gson.Gson;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -43,6 +42,8 @@ public class HttpRequest extends HttpEntity {
     private HttpRequest() {
         super();
         urlParams = new LinkedHashMap<>();
+        method = HttpMethod.GET;
+        url = "/";
     }
 
     public HttpRequest(String template) throws HttpException {
@@ -63,6 +64,7 @@ public class HttpRequest extends HttpEntity {
     }
 
     private Map<String, String> parseParams(String url) {
+        if (!url.contains(QUERY_PARAM_SECTION_SEPARATOR)) return Map.of();
         return Arrays.stream(
                         url.substring(
                                 url.indexOf(QUERY_PARAM_SECTION_SEPARATOR) + QUERY_PARAM_SECTION_SEPARATOR.length()
@@ -74,7 +76,8 @@ public class HttpRequest extends HttpEntity {
     }
 
     private String parseUrl(String url) {
-        return url.substring(0, url.indexOf(QUERY_PARAM_SECTION_SEPARATOR));
+        int queryParamSectionStartIndex = url.indexOf(QUERY_PARAM_SECTION_SEPARATOR);
+        return queryParamSectionStartIndex == -1 ? url : url.substring(0, queryParamSectionStartIndex);
     }
 
     private HttpMethod checkMethod(String token) throws MethodNotAllowed {
@@ -123,7 +126,7 @@ public class HttpRequest extends HttpEntity {
     }
 
     public HttpRequest body(Object body) {
-        this.body = new Gson().toJson(body);
+        this.body = mapper.toJson(body);
         return this;
     }
 

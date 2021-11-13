@@ -15,7 +15,7 @@ public class HttpConnectionHandler implements IConnectionHandler {
     private final HttpRequestDispatcher httpRequestDispatcher = new HttpRequestDispatcher();
 
     @Override
-    public void handle(Connection connection) throws IOException {
+    public void handle(Connection connection) throws Exception {
         HttpRequestConnection httpRequestConnection = new HttpRequestConnection(connection);
         try {
             httpRequestConnection.write(
@@ -29,8 +29,7 @@ public class HttpConnectionHandler implements IConnectionHandler {
             CommandLine.printStackTrace(e);
         } catch (Exception e) {
             httpRequestConnection.write(HttpResponse.create().code(HttpResponseCode.INTERNAL_SERVER_ERROR));
-            CommandLine.println("Error during request.");
-            CommandLine.printStackTrace(e);
+            throw e;
         }
         httpRequestConnection.shutdownOutput();
     }

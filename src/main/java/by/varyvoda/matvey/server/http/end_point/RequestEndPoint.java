@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 public @interface RequestEndPoint {
 
     HttpMethod method();
+
+    String url();
 }

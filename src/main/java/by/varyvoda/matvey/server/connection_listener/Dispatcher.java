@@ -28,6 +28,7 @@ public class Dispatcher implements Closeable {
             } catch (Exception e) {
                 CommandLine.printStackTrace(e);
                 CommandLine.println("Exception occurred while handling " + connectionDescription);
+            } finally {
                 connections.removeIf((connection -> connection.getConnectedSocket().equals(socket)));
             }
         });

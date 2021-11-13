@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.Socket;
 
 @RequiredArgsConstructor
@@ -20,7 +21,6 @@ public class HttpClient {
 
     private final String host;
     private final int port;
-    private final Gson gson = new Gson();
 
     public void send(HttpRequest request) {
         new Thread(() -> {
@@ -37,7 +37,7 @@ public class HttpClient {
         }).start();
     }
 
-    public <R> Observable<R> send(HttpRequest request, Class<R> resultClass) {
+    public <R> Observable<R> send(HttpRequest request, Type resultClass) {
         Observable<R> result = new Observable<>();
         new Thread(() -> {
             try (HttpResponseConnection connection = new HttpResponseConnection(new Connection(new Socket(host, port)))) {
@@ -49,12 +49,8 @@ public class HttpClient {
                 if (response.getCode() != HttpResponseCode.OK.getCode())
                     result.throwError(new Exception("Response is not OK: " + response.getCode() + " " + response.getMessage()));
                 else
-                    result.setValue(gson.fromJson(response.getBody(), resultClass));
+                    result.setValue(response.getEntity(resultClass));
 
-            } catch (HttpException e) {
-                CommandLine.println("Http exception: " + e.getMessage());
-            } catch (IOException e) {
-                CommandLine.println("Request error: " + e.getMessage());
             } catch (Exception e) {
                 CommandLine.printStackTrace(e);
             }

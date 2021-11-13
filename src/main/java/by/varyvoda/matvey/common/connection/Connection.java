@@ -22,11 +22,7 @@ public class Connection implements IConnection<String, String> {
     }
 
     public String readAll() throws IOException {
-        Scanner requestScanner = new Scanner(connectedSocket.getInputStream());
-        StringBuilder stringBuilder = new StringBuilder();
-        while(requestScanner.hasNextLine())
-            stringBuilder.append(requestScanner.nextLine());
-        return stringBuilder.toString();
+        return new String(connectedSocket.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 
     public void write(String writable) throws IOException {

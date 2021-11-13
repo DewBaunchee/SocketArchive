@@ -3,8 +3,10 @@ package by.varyvoda.matvey.common.http.entity;
 import by.varyvoda.matvey.common.http.entity.specification.HttpVersion;
 import by.varyvoda.matvey.common.http.entity.specification.exception.HttpException;
 import by.varyvoda.matvey.common.http.entity.specification.exception.request.BadRequest;
+import com.google.gson.Gson;
 import lombok.Getter;
 
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -14,6 +16,7 @@ import static by.varyvoda.matvey.common.http.entity.specification.Specification.
 @Getter
 public abstract class HttpEntity {
 
+    protected Gson mapper = new Gson();
     protected HttpVersion version = HttpVersion.HTTP_1_1;
     protected Map<String, String> headers;
     protected String body;
@@ -55,12 +58,16 @@ public abstract class HttpEntity {
 
     @Override
     public String toString() {
-        return (headers.entrySet().stream()
+        return headers.entrySet().stream()
                 .map(entry -> entry.getKey() + HEADER_KEY_VALUE_SEPARATOR + entry.getValue())
                 .reduce("", (accumulator, header) -> accumulator + header + "\n")
                 + "\n"
-                + body).trim();
+                + body;
     }
 
     protected abstract void scanFirstLine(String firstLine) throws HttpException;
+
+    public <R>R getEntity(Type resultClass) {
+        return mapper.fromJson(body, resultClass);
+    }
 }

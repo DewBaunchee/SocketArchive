@@ -5,6 +5,7 @@ import by.varyvoda.matvey.common.http.entity.specification.HttpVersion;
 import by.varyvoda.matvey.common.http.entity.specification.exception.HttpException;
 import by.varyvoda.matvey.common.http.entity.specification.exception.request.HttpVersionNotSupported;
 import by.varyvoda.matvey.common.http.entity.specification.exception.response.BadResponse;
+import com.google.gson.Gson;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -23,8 +24,13 @@ public class HttpResponse extends HttpEntity {
         return new HttpResponse();
     }
 
+    public static HttpResponse nullBody() {
+        return ok().body(null);
+    }
+
     private HttpResponse() {
         super();
+        code(HttpResponseCode.OK);
     }
 
     public HttpResponse(String template) throws HttpException {
@@ -74,8 +80,8 @@ public class HttpResponse extends HttpEntity {
         return this;
     }
 
-    public HttpResponse body(String body) {
-        this.body = body;
+    public HttpResponse body(Object body) {
+        this.body = mapper.toJson(body);
         return this;
     }
 
