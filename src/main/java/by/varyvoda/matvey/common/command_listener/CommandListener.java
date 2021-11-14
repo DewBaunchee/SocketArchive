@@ -4,9 +4,7 @@ import by.varyvoda.matvey.common.command_line.CommandLine;
 import by.varyvoda.matvey.common.command_listener.exception.CannotRegisterCommandException;
 
 import java.io.Closeable;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CommandListener extends Thread implements Closeable {
 
@@ -25,7 +23,8 @@ public class CommandListener extends Thread implements Closeable {
         CommandLine.setInputMessage(">>> Print command >>> ");
         while (!isInterrupted()) {
             String line = CommandLine.readLine().trim();
-            String[] tokens = line.split(" +");
+            String[] tokens = parseTokens(line);
+            if (tokens.length == 0) continue;
             String cmd = tokens[0];
             String[] args = tokens.length == 1 ? new String[]{}
                     : Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -36,6 +35,52 @@ public class CommandListener extends Thread implements Closeable {
                 CommandLine.printStackTrace(e);
             }
         }
+    }
+
+    private String[] parseTokens(String line) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder token = new StringBuilder();
+
+        boolean isInString = false;
+        boolean tokenStarted = false;
+        boolean isShielded = false;
+        for (char c : line.toCharArray()) {
+            if (isShielded) {
+                isShielded = false;
+                token.append(c);
+                continue;
+            }
+            if (c == '\\') isShielded = true;
+            if (c == '"') {
+                if (isInString) {
+                    isInString = false;
+                    tokenStarted = false;
+                    tokens.add(token.toString());
+                    token = new StringBuilder();
+                } else {
+                    isInString = true;
+                    tokenStarted = true;
+                }
+                continue;
+            }
+            if (!isInString) {
+                if ((c + "").isBlank()) {
+                    if (tokenStarted) {
+                        tokenStarted = false;
+                        tokens.add(token.toString());
+                        token = new StringBuilder();
+                    }
+                    continue;
+                } else {
+                    tokenStarted = true;
+                }
+            }
+            token.append(c);
+        }
+        if (token.length() > 0) {
+            tokens.add(token.toString());
+        }
+        return tokens.toArray(new String[0]);
     }
 
     public void registerCommand(Command cmd) {

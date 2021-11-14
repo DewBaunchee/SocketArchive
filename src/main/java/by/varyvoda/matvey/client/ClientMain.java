@@ -8,6 +8,7 @@ import by.varyvoda.matvey.common.command_listener.CommandListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -113,6 +114,16 @@ public class ClientMain {
                                                 },
                                                 error -> CommandLine.println(error.getMessage())
                                         )
+                        )
+                        .description("Get student files by name")
+                        .build()
+        ); commandListener.registerCommand(
+                Command.builder()
+                        .command("test")
+                        .argumentsDescription("<id> <field_name>=<new_value>[, <field_name>=<new_value>]")
+                        .requiredArgsCount(2)
+                        .runnable(
+                                arguments -> CommandLine.println(Arrays.toString(arguments))
                         )
                         .description("Get student files by name")
                         .build()
